@@ -10,30 +10,25 @@
     <link rel="stylesheet" href="">
 </head>
 
+<style>
+    table, th, td {
+      border:1px solid black;
+    }
+
+    form {
+        border:1px solid black;
+    }
+</style>
+
 <body>
-    <h1>Simple Demo for PUT, GET, and DELETE</h1>
+    <h1>My Simple Inventory Application</h1>
     <p id="lambda-info">
         <!-- loaded with AJAX -->
     </p>
 
     <hr>
-    <button id="send-data">Send Data</button>
-    <p>Sends an example JSON object to the server with id 11111</p>
-    <script>
-        document.getElementById("send-data").onclick = function () {
-            let xhr = new XMLHttpRequest();
-            xhr.open("PUT", "Your Lambda here");
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify({
-                "id": "6666666",
-                "price": 19,
-                "name": "test put value"
-            }));
-        }
-    </script>
-
-    <button id="load-data">Load Data</button>
-    <p>Loads data from the server</p>
+    <button id="load-data">Load All Items</button>
+    <!-- <p>Loads data from the server</p> -->
     <script>
         document.getElementById("load-data").onclick = function () {
             let lambda = document.getElementById("lambda-info");
@@ -41,19 +36,128 @@
             xhr.addEventListener("load", function () {
                 lambda.innerHTML = xhr.response;
             });
-            xhr.open("GET", "Your Lambda here");
+            xhr.open("GET", "https://kbtch9wude.execute-api.us-east-2.amazonaws.com/items");
             xhr.send();
         }
+    </script>
 
+    <br>
+    <br>
+    <table id="table">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td>0000000</td>
+            <td>Sample</td>
+            <td>19</td>
+            <td><button id="sample">Sample</button></td>
+        </tr>
+    </table>
+
+    <br>
+    <!-- Form here -->
+    <form id="form">
+        <label for="id">ID:</label><br>
+        <input type="text" id="id" name="id"><br>
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name"><br>
+        <label for="price">Price:</label><br>
+        <input type="text" id="price" name="price">
+    </form> 
+    <br>
+
+    <button id="send-data">Send Data</button>
+    <!-- <p>Sends an example JSON object to the server with id 11111</p> -->
+    <script>
+        document.getElementById("send-data").onclick = function () {
+            // Find a <table> element with id="table":
+            var table = document.getElementById("table");
+            //Find a <form> element with id="form"
+            var form = document.getElementById("form");
+            var skip = false;
+            // 6666666 test put name 19
+            var id = form.elements[0].value;
+            var name = form.elements[1].value;
+            var price = form.elements[2].value;
+
+            // Iterate through entire table
+            for (var i = 0, row; row = table.rows[i]; i++) {
+                //iterate through rows
+                //rows would be accessed using the "row" variable assigned in the for loop
+                for (var j = 0, col; col = row.cells[j]; j++) {
+                    if(j == 0 && col.innerHTML == id) {
+                        skip = true;
+                    }
+                }  
+            }
+
+            if(!skip) {
+                // Create an empty <tr> element and add it to the 1st position of the table:
+                var row = table.insertRow(1);
+
+                // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+                var cell4 = row.insertCell(3);
+
+                // Add some text to the new cells:
+                cell1.innerHTML = id;
+                cell2.innerHTML = name; 
+                cell3.innerHTML = price;
+                cell4.innerHTML = '<button id="delete-data">Delete Data</button>';
+            }
+            /*_____________________________*/
+            let xhr = new XMLHttpRequest();
+            xhr.open("PUT", "https://kbtch9wude.execute-api.us-east-2.amazonaws.com/items");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify({
+                "id": id,
+                "price": price,
+                "name": name
+            }));
+        }
     </script>
 
     <hr>
+
+    <!-- Form here -->
+    <form id="formtwo">
+        <label for="id">ID:</label><br>
+        <input type="text" id="id" name="id"><br>
+    </form> 
+    <br>
+
     <button id="delete-data">Delete Data</button>
-    <p>Deletes a JSON object from the server with 11111</p>
+    <!-- <p>Deletes a JSON object from the server with 11111</p> -->
     <script>
         document.getElementById("delete-data").onclick = function () {
+            // Find a <table> element with id="table":
+            var table = document.getElementById("table");
+            //Find a <form> element with id="form"
+            var form = document.getElementById("formtwo");
+            // 6666666 test put name 19
+            var id = form.elements[0].value;
+
+            
+            // Iterate through entire table
+            for (var i = 0, row; row = table.rows[i]; i++) {
+                //iterate through rows
+                //rows would be accessed using the "row" variable assigned in the for loop
+                for (var j = 0, col; col = row.cells[j]; j++) {
+                    if(j == 0 && col.innerHTML == id) {
+                        table.deleteRow(i);
+                        break;
+                    }
+                }  
+            }
+            
             let xhr = new XMLHttpRequest();
-            xhr.open("DELETE", "Your Lambda here");
+            xhr.open("DELETE", "https://kbtch9wude.execute-api.us-east-2.amazonaws.com/items/"+id);
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send();
         }

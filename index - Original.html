@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Test AWS Lambda</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+</head>
+
+<body>
+    <h1>Simple Demo for PUT, GET, and DELETE</h1>
+    <p id="lambda-info">
+        <!-- loaded with AJAX -->
+    </p>
+
+    <hr>
+    <button id="send-data">Send Data</button>
+    <p>Sends an example JSON object to the server with id 11111</p>
+    <script>
+        document.getElementById("send-data").onclick = function () {
+            let xhr = new XMLHttpRequest();
+            xhr.open("PUT", "https://kbtch9wude.execute-api.us-east-2.amazonaws.com/items");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify({
+                "id": "6666666",
+                "price": 19,
+                "name": "test put value"
+            }));
+        }
+    </script>
+
+    <button id="load-data">Load Data</button>
+    <p>Loads data from the server</p>
+    <script>
+        document.getElementById("load-data").onclick = function () {
+            let lambda = document.getElementById("lambda-info");
+            let xhr = new XMLHttpRequest();
+            xhr.addEventListener("load", function () {
+                lambda.innerHTML = xhr.response;
+            });
+            xhr.open("GET", "https://kbtch9wude.execute-api.us-east-2.amazonaws.com/items");
+            xhr.send();
+        }
+
+    </script>
+
+    <hr>
+    <button id="delete-data">Delete Data</button>
+    <p>Deletes a JSON object from the server with 11111</p>
+    <script>
+        document.getElementById("delete-data").onclick = function () {
+            let xhr = new XMLHttpRequest();
+            xhr.open("DELETE", "https://kbtch9wude.execute-api.us-east-2.amazonaws.com/items/6666666");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send();
+        }
+    </script>
+</body>
+
+</html>
